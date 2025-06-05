@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte de Personas{% endblock %}
+
+{% block content %}
+<div class="d-print-none mb-3">
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir</button>
+    {% if session['rol'] == 'admin' %}
+    <a href="{{ url_for('configuracion_reporte') }}" class="btn btn-warning">⚙️ Personalizar Plantilla</a>
+    {% endif %}
+    <a href="{{ url_for('personas') }}" class="btn btn-secondary">← Volver</a>
+</div>
+
+<!-- Ejemplos de personalización para el usuario -->
+{% if session['rol'] == 'admin' %}
+<div class="alert alert-info d-print-none">
+    <strong>Ejemplos de personalización:</strong>
+    <ul>
+        <li><b>Encabezado simple:</b> <code>&lt;h1 style='color:navy'&gt;Mi Reporte de Personas&lt;/h1&gt;</code></li>
+        <li><b>Encabezado con logo:</b> <code>&lt;div style='display:flex;align-items:center'&gt;&lt;img src='/static/logo.svg' height='40' style='margin-right:10px'&gt;&lt;span style='font-size:1.5em'&gt;Reporte de Personas 2025&lt;/span&gt;&lt;/div&gt;</code></li>
+        <li><b>Pie de página con fecha y usuario:</b> <code>&lt;div style='font-size:12px;text-align:right'&gt;Generado el {{ "now"|date("%d/%m/%Y") }} por {{ session['usuario'] }}&lt;/div&gt;</code></li>
+        <li><b>Pie con paginación (solo impresión):</b> <code>&lt;script&gt;window.onload=function(){window.print()}&lt;/script&gt;</code> (para imprimir automáticamente)</li>
+        <li><b>Estilos CSS para tabla zebra:</b> <code>.table-striped tbody tr:nth-child(odd) { background: #f9f9f9; }</code></li>
+        <li><b>Estilos para ocultar columnas en impresión:</b> <code>@media print { .table th:nth-child(2), .table td:nth-child(2) { display:none; } }</code> <span class="text-muted">(oculta la columna CURP al imprimir)</span></li>
+        <li><b>Estilos para firma:</b> <code>.firma { margin-top:40px; text-align:right; font-style:italic; }</code> y en el pie: <code>&lt;div class='firma'&gt;Firma del responsable&lt;/div&gt;</code></li>
+    </ul>
+    <span>Accede a <b>Personalizar Plantilla</b> para editar estos elementos.<br>Recuerda que puedes usar HTML y CSS estándar.</span>
+</div>
+{% endif %}
+
+<!-- Encabezado personalizable -->
+<div id="reporte-encabezado">{{ config_reporte.encabezado|safe }}</div>
+
+<style type="text/css">
+@media print {
+    .d-print-none { display: none !important; }
+}
+</style>
+{% if config_reporte.estilos %}
+<!-- Estilos personalizados de usuario para el reporte -->
+{{ config_reporte.estilos|safe }}
+{% endif %}
+
+<table class="table table-bordered table-sm align-middle table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>Nombre Completo</th>
+            <th>CURP</th>
+            <th>Dirección</th>
+            <th>Colonia</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Código Postal</th>
+            <th>Municipio</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for persona in personas %}
+        <tr>
+            <td>{{ persona.nombre }} {{ persona.apellido_paterno }} {{ persona.apellido_materno }}</td>
+            <td>{{ persona.curp }}</td>
+            <td>{{ persona.direccion }}</td>
+            <td>{{ persona.colonia }}</td>
+            <td>{{ persona.fecha_nac }}</td>
+            <td>{{ persona.cp }}</td>
+            <td>{{ persona.municipio }}</td>
+            <td>{{ persona.estado }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pie de página personalizable -->
+<div id="reporte-pie">{{ config_reporte.pie|safe }}</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Personas{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">Personas Registradas</h3>
+<a href="{{ url_for('nueva_persona') }}" class="btn btn-success mb-3">+ Nueva Persona</a>
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Foto</th>
+            <th>Nombre Completo</th>
+            <th>CURP</th>
+            <th>Dirección</th>
+            <th>Municipio</th>
+            <th>Estado</th>
+            <th>Clave Elector</th>
+            <th>Fecha Nac.</th>
+            <th>Código Postal</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for persona in personas %}
+        <tr>
+            <td>
+                {% if persona.foto %}
+                    <img src="{{ url_for('static', filename='uploads/' + persona.foto) }}" width="60" class="rounded">
+                {% else %}
+                    <span class="text-muted">Sin foto</span>
+                {% endif %}
+            </td>
+            <td>{{ persona.nombre }} {{ persona.apellido_paterno }} {{ persona.apellido_materno }}</td>
+            <td>{{ persona.curp }}</td>
+            <td>{{ persona.direccion }}</td>
+            <td>{{ persona.municipio }}</td>
+            <td>{{ persona.estado }}</td>
+            <td>{{ persona.clave_elector }}</td>
+            <td>{{ persona.fecha_nac }}</td>
+            <td>{{ persona.cp }}</td>
+            <td>
+                <a href="{{ url_for('editar_persona', id=persona.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{{ url_for('eliminar_persona', id=persona.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este registro?')">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

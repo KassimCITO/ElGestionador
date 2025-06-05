@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración de Plantilla de Reporte{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Personalizar Plantilla de Reporte</h2>
+<form method="post">
+    <div class="mb-3">
+        <label for="encabezado" class="form-label">Encabezado del Reporte (HTML permitido)</label>
+        <textarea class="form-control" id="encabezado" name="encabezado" rows="3">{{ config.encabezado|safe }}</textarea>
+    </div>
+    <div class="mb-3">
+        <label for="pie" class="form-label">Pie de Página (HTML permitido)</label>
+        <textarea class="form-control" id="pie" name="pie" rows="2">{{ config.pie|safe }}</textarea>
+    </div>
+    <div class="mb-3">
+        <label for="estilos" class="form-label">Estilos CSS personalizados</label>
+        <textarea class="form-control" id="estilos" name="estilos" rows="2">{{ config.estilos|safe }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <a href="{{ url_for('reportes') }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

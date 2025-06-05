@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Inicio{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h2 class="mb-4">Bienvenido al Sistema de Gestión de Personas</h2>
+    <p class="lead">Usa el menú para administrar personas y usuarios (si tienes permisos).</p>
+    <img src="{{ url_for('static', filename='logo.svg') }}" class="img-fluid" style="max-height: 200px;" alt="Logo">
+</div>
+{% endblock %}

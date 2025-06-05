@@ -1,0 +1,7 @@
+Flask
+Flask-Login
+Flask-WTF
+Werkzeug
+WTForms
+Pillow
+python-dotenv
