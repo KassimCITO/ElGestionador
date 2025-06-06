@@ -4,13 +4,17 @@
 
 {% block content %}
 <h3 class="mb-4">Usuarios del Sistema</h3>
-<a href="{{ url_for('usuarios') }}?nuevo=1" class="btn btn-success mb-3">+ Nuevo Usuario</a>
+<a href="{{ url_for('usuarios') }}?nuevo=1" class="btn btn-success mb-3">➕ Nuevo Usuario</a>
 
 {% if request.args.get('nuevo') %}
   <div class="card mb-4">
     <div class="card-body">
       <h5 class="card-title">Nuevo Usuario</h5>
       <form method="post">
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" class="form-control" id="nombre" name="nombre" required>
+        </div>
         <div class="mb-3">
           <label for="usuario" class="form-label">Nombre de Usuario</label>
           <input type="text" class="form-control" id="usuario" name="usuario" required>
@@ -43,8 +47,8 @@
           <input class="form-check-input" type="checkbox" id="perm_impresion" name="perm_impresion">
           <label class="form-check-label" for="perm_impresion">Permitir Imprimir</label>
         </div>
-        <button type="submit" class="btn btn-success">Guardar Usuario</button>
-        <a href="{{ url_for('usuarios') }}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-success">💾 Guardar Usuario</button>
+        <a href="{{ url_for('usuarios') }}" class="btn btn-secondary">❌ Cancelar</a>
       </form>
     </div>
   </div>
@@ -54,6 +58,7 @@
     <thead class="table-dark">
         <tr>
             <th>Usuario</th>
+            <th>Nombre</th>
             <th>Rol</th>
             <th>Permite Lectura</th>
             <th>Permite Crear</th>
@@ -66,15 +71,16 @@
         {% for u in usuarios %}
         <tr>
             <td>{{ u.usuario }}</td>
+            <td>{{ u.nombre }}</td>
             <td>{{ u.rol }}</td>
             <td>{% if u.perm_lectura %}✅{% else %}❌{% endif %}</td>
             <td>{% if u.perm_creacion %}✅{% else %}❌{% endif %}</td>
             <td>{% if u.perm_edicion %}✅{% else %}❌{% endif %}</td>
             <td>{% if u.perm_impresion %}✅{% else %}❌{% endif %}</td>
             <td>
-                <a href="{{ url_for('editar_usuario', usuario_id=u.id) }}" class="btn btn-sm btn-warning">Editar</a>
+                <a href="{{ url_for('editar_usuario', usuario_id=u.id) }}" class="btn btn-sm btn-warning">✏️ Editar</a>
                 {% if u.usuario != 'admin' %}
-                <a href="{{ url_for('eliminar_usuario', usuario_id=u.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este usuario?')">Eliminar</a>
+                <a href="{{ url_for('eliminar_usuario', usuario_id=u.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este usuario?')">🗑️ Eliminar</a>
                 {% endif %}
             </td>
         </tr>

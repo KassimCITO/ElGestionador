@@ -163,6 +163,11 @@ def nueva_persona():
             "clave_elector": clave_elector,
             "observaciones": request.form.get("observaciones", "")
         }
+        # Obtener el ID del usuario actual
+        usuario_actual = session.get("usuario")
+        usuario_row = dbman.get_usuario_by_username(usuario_actual, None) if usuario_actual else None
+        datos["creado_por"] = usuario_row["id"] if usuario_row else None
+        datos["modificado_por"] = usuario_row["id"] if usuario_row else None
         if not datos["nombre"] or not datos["apellido_paterno"] or not datos["apellido_materno"] or not datos["curp"]:
             flash("Nombre, apellidos y CURP no pueden quedar en blanco.", "warning")
             return render_template("nueva_persona.html", estados=ESTADOS_MX, municipios_json=json.dumps(MUNICIPIOS_MX, ensure_ascii=False))
@@ -205,6 +210,10 @@ def editar_persona(id):
             "clave_elector": request.form["clave_elector"].strip().upper(),
             "observaciones": request.form.get("observaciones", "")
         }
+        # Obtener el ID del usuario actual
+        usuario_actual = session.get("usuario")
+        usuario_row = dbman.get_usuario_by_username(usuario_actual, None) if usuario_actual else None
+        datos["modificado_por"] = usuario_row["id"] if usuario_row else None
         if not datos["nombre"] or not datos["apellido_paterno"] or not datos["apellido_materno"] or not datos["curp"]:
             flash("Nombre, apellidos y CURP no pueden quedar en blanco.", "warning")
             return render_template("editar_persona.html", persona=persona, estados=ESTADOS_MX, municipios_json=json.dumps(MUNICIPIOS_MX, ensure_ascii=False))
@@ -236,6 +245,7 @@ def usuarios():
         nuevo = {
             "usuario": request.form["usuario"],
             "clave": request.form["clave"],
+            "nombre": request.form["nombre"],
             "rol": request.form.get("rol", "user"),
             "perm_lectura": int("perm_lectura" in request.form),
             "perm_creacion": int("perm_creacion" in request.form),
@@ -273,15 +283,16 @@ def editar_usuario(usuario_id):
         return redirect(url_for("usuarios"))
     if request.method == "POST":
         clave = request.form["clave"]
+        nombre = request.form["nombre"]
         rol = request.form.get("rol", "user")
         perm_lectura = int("perm_lectura" in request.form)
         perm_creacion = int("perm_creacion" in request.form)
         perm_edicion = int("perm_edicion" in request.form)
         perm_impresion = int("perm_impresion" in request.form)
         if clave:
-            dbman.update_usuario(usuario_id, clave, rol, perm_lectura, perm_creacion, perm_edicion, perm_impresion)
+            dbman.update_usuario(usuario_id, clave, nombre, rol, perm_lectura, perm_creacion, perm_edicion, perm_impresion)
         else:
-            dbman.update_usuario_no_clave(usuario_id, rol, perm_lectura, perm_creacion, perm_edicion, perm_impresion)
+            dbman.update_usuario_no_clave(usuario_id, nombre, rol, perm_lectura, perm_creacion, perm_edicion, perm_impresion)
         flash("Usuario actualizado correctamente.", "success")
         return redirect(url_for("usuarios"))
     return render_template("editar_usuario.html", usuario=usuario)
@@ -325,6 +336,18 @@ def reportes():
         personas_list.append(persona_dict)
     config = cargar_config_reporte()
     return render_template("reportes.html", personas=personas_list, config_reporte=config)
+
+@app.route("/personas/eliminar/<int:id>", methods=["POST", "GET"])
+def eliminar_persona(id):
+    if not verificar_permiso("edicion"):
+        return redirect(url_for("dashboard"))
+    persona = dbman.get_persona(id)
+    if not persona:
+        flash("Persona no encontrada.", "warning")
+        return redirect(url_for("personas"))
+    dbman.delete_persona(id)
+    flash("Persona eliminada correctamente.", "success")
+    return redirect(url_for("personas"))
 
 if __name__ == "__main__":
     app.run(debug=True)

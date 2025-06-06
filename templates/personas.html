@@ -4,7 +4,7 @@
 
 {% block content %}
 <h3 class="mb-4">Personas Registradas</h3>
-<a href="{{ url_for('nueva_persona') }}" class="btn btn-success mb-3">+ Nueva Persona</a>
+<a href="{{ url_for('nueva_persona') }}" class="btn btn-success mb-3">➕ Nueva Persona</a>
 <table class="table table-striped table-hover align-middle">
     <thead class="table-dark">
         <tr>
@@ -12,11 +12,13 @@
             <th>Nombre Completo</th>
             <th>CURP</th>
             <th>Dirección</th>
+            <th>Colonia</th>
+            <th>Código Postal</th>
             <th>Municipio</th>
             <th>Estado</th>
             <th>Clave Elector</th>
             <th>Fecha Nac.</th>
-            <th>Código Postal</th>
+            <th>Observaciones</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -33,14 +35,16 @@
             <td>{{ persona.nombre }} {{ persona.apellido_paterno }} {{ persona.apellido_materno }}</td>
             <td>{{ persona.curp }}</td>
             <td>{{ persona.direccion }}</td>
+            <td>{{ persona.colonia }}</td>
+            <td>{{ persona.cp }}</td>
             <td>{{ persona.municipio }}</td>
             <td>{{ persona.estado }}</td>
             <td>{{ persona.clave_elector }}</td>
             <td>{{ persona.fecha_nac }}</td>
-            <td>{{ persona.cp }}</td>
+            <td>{{ persona.observaciones }}</td>
             <td>
-                <a href="{{ url_for('editar_persona', id=persona.id) }}" class="btn btn-sm btn-warning">Editar</a>
-                <a href="{{ url_for('eliminar_persona', id=persona.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este registro?')">Eliminar</a>
+                <a href="{{ url_for('editar_persona', id=persona.id) }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                <a href="{{ url_for('eliminar_persona', id=persona.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este registro?')">🗑️ Eliminar</a>
             </td>
         </tr>
         {% endfor %}
