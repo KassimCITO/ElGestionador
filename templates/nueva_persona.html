@@ -9,7 +9,12 @@
         <div class="col-md-3 text-center">
             <label for="foto" class="form-label">Fotografía</label>
             <input type="file" class="form-control mb-2" id="foto" name="foto" accept="image/*">
-            <div id="previewFoto" class="mb-2"></div>
+            <div id="previewFoto" class="mb-2">
+                <span id="avatarPlaceholder" style="font-size:70px;display:inline-block;">
+                    <span id="iconoHombre" style="display:inline;">👨</span>
+                    <span id="iconoMujer" style="display:none;">👩</span>
+                </span>
+            </div>
         </div>
         <div class="col-md-9">
             <div class="mb-2">
@@ -148,6 +153,7 @@
     // Previsualización de foto y nombre
     document.getElementById('foto').addEventListener('change', function(e) {
         var preview = document.getElementById('previewFoto');
+        var placeholder = document.getElementById('avatarPlaceholder');
         preview.innerHTML = '';
         if (e.target.files && e.target.files[0]) {
             var reader = new FileReader();
@@ -159,6 +165,25 @@
                 preview.appendChild(img);
             };
             reader.readAsDataURL(e.target.files[0]);
+        } else {
+            // Si no hay imagen, mostrar el placeholder
+            preview.appendChild(placeholder);
+        }
+    });
+    // Opcional: cambiar ícono según nombre (si detecta nombre femenino)
+    document.getElementById('nombre').addEventListener('input', function() {
+        var nombre = this.value.trim().toLowerCase();
+        var iconoHombre = document.getElementById('iconoHombre');
+        var iconoMujer = document.getElementById('iconoMujer');
+        // Lista simple de nombres femeninos comunes (puedes ampliar)
+        var nombresFemeninos = ['maria','ana','guadalupe','rosa','carmen','josefa','laura','patricia','adriana','veronica','alejandra','claudia','paula','karla','luz','diana','jessica','monica','leticia','mariana','isabel','gabriela','sandra','elena','silvia','maribel','beatriz','alicia','irene','lucia','marcela','marisol','norma','olga','raquel','susana','teresa','viviana'];
+        var esMujer = nombresFemeninos.some(function(n) { return nombre.startsWith(n); });
+        if (esMujer) {
+            iconoHombre.style.display = 'none';
+            iconoMujer.style.display = 'inline';
+        } else {
+            iconoHombre.style.display = 'inline';
+            iconoMujer.style.display = 'none';
         }
     });
     function actualizarPreviewNombre() {

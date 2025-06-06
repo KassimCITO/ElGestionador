@@ -180,8 +180,14 @@ def nueva_persona():
                     flash("La fotografía debe tener al menos 512 x 512 píxeles.", "warning")
                     return render_template("nueva_persona.html", estados=ESTADOS_MX, municipios_json=json.dumps(MUNICIPIOS_MX, ensure_ascii=False))
                 archivo.seek(0)
-                nombre_archivo = secure_filename(archivo.filename)
-                archivo.save(os.path.join(app.config["UPLOAD_FOLDER"], nombre_archivo))
+                # Guardar como webp
+                nombre_base = secure_filename(archivo.filename.rsplit('.', 1)[0])
+                nombre_archivo = f"{nombre_base}.webp"
+                ruta_destino = os.path.join(app.config["UPLOAD_FOLDER"], nombre_archivo)
+                img.convert("RGB").save(ruta_destino, "webp")
+                # Eliminar archivo original si fue guardado temporalmente
+                if hasattr(archivo, 'close'):
+                    archivo.close()
             except Exception:
                 flash("Archivo de imagen no válido.", "warning")
                 return render_template("nueva_persona.html", estados=ESTADOS_MX, municipios_json=json.dumps(MUNICIPIOS_MX, ensure_ascii=False))
@@ -225,8 +231,22 @@ def editar_persona(id):
                     flash("La fotografía debe tener al menos 512 x 512 píxeles.", "warning")
                     return render_template("editar_persona.html", persona=persona, estados=ESTADOS_MX, municipios_json=json.dumps(MUNICIPIOS_MX, ensure_ascii=False))
                 archivo.seek(0)
-                nombre_archivo = secure_filename(archivo.filename)
-                archivo.save(os.path.join(app.config["UPLOAD_FOLDER"], nombre_archivo))
+                # Guardar como webp
+                nombre_base = secure_filename(archivo.filename.rsplit('.', 1)[0])
+                nombre_archivo = f"{nombre_base}.webp"
+                ruta_destino = os.path.join(app.config["UPLOAD_FOLDER"], nombre_archivo)
+                img.convert("RGB").save(ruta_destino, "webp")
+                # Eliminar imagen anterior si existe
+                if persona and persona["foto"]:
+                    ruta_anterior = os.path.join(app.config["UPLOAD_FOLDER"], persona["foto"])
+                    if os.path.exists(ruta_anterior):
+                        try:
+                            os.remove(ruta_anterior)
+                        except Exception:
+                            pass
+                # Eliminar archivo original si fue guardado temporalmente
+                if hasattr(archivo, 'close'):
+                    archivo.close()
                 dbman.update_persona_foto(id, nombre_archivo)
             except Exception:
                 flash("Archivo de imagen no válido.", "warning")
