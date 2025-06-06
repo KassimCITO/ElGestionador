@@ -1,0 +1,12 @@
+# Archivos y carpetas a ignorar por Git
+.env
+estados-municipios.json
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+database.db
+static/uploads/
+.env.*
+.DS_Store
+*.sqlite3

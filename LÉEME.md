@@ -291,3 +291,9 @@ A continuación, algunos ejemplos de cómo se vería el reporte:
 > Puedes crear tus propias capturas de pantalla y guardarlas en la carpeta `static/` para personalizar aún más este manual.
 
 ---
+
+## Aviso de licencia
+
+Este proyecto está licenciado bajo los términos de la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles. Puedes usar, modificar y distribuir este software libremente, pero se proporciona "tal cual", sin garantías.
+
+---
