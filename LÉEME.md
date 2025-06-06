@@ -70,6 +70,7 @@ Este sistema permite la gestión de personas y usuarios, con registro de datos p
    ```
 
    Si tienes problemas con permisos, usa:
+
    ```powershell
    pip install --user -r requirements.txt
    ```
@@ -183,10 +184,13 @@ Sistema web para la gestión de personas y usuarios, desarrollado en Flask y SQL
 ## Instalación rápida
 
 - **Con Docker:**
+
   ```powershell
   docker-compose up --build
   ```
+  
 - **Sin Docker:**
+
   ```powershell
   pip install -r requirements.txt
   python app.py

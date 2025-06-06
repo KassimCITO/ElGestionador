@@ -99,9 +99,9 @@ class DBManager:
     def insert_persona(self, datos, nombre_archivo):
         with self.get_db() as db:
             db.execute("""
-                INSERT INTO personas (nombre, apellido_paterno, apellido_materno, curp, direccion, colonia, cp, fecha_nac, id_estado, id_municipio, clave_elector, foto)
-                VALUES (:nombre, :apellido_paterno, :apellido_materno, :curp, :direccion, :colonia, :cp, :fecha_nac, :id_estado, :id_municipio, :clave_elector, ?)
-            """, (*[datos[k] for k in ["nombre","apellido_paterno","apellido_materno","curp","direccion","colonia","cp","fecha_nac","id_estado","id_municipio","clave_elector"]], nombre_archivo))
+                INSERT INTO personas (nombre, apellido_paterno, apellido_materno, curp, direccion, colonia, cp, fecha_nac, id_estado, id_municipio, clave_elector, foto, observaciones)
+                VALUES (:nombre, :apellido_paterno, :apellido_materno, :curp, :direccion, :colonia, :cp, :fecha_nac, :id_estado, :id_municipio, :clave_elector, :foto, :observaciones)
+            """, {**datos, "foto": nombre_archivo})
             db.commit()
 
     def update_persona(self, persona_id, datos):
@@ -111,7 +111,8 @@ class DBManager:
                 SET nombre=:nombre, apellido_paterno=:apellido_paterno,
                     apellido_materno=:apellido_materno, curp=:curp,
                     direccion=:direccion, colonia=:colonia, cp=:cp, fecha_nac=:fecha_nac,
-                    id_estado=:id_estado, id_municipio=:id_municipio, clave_elector=:clave_elector
+                    id_estado=:id_estado, id_municipio=:id_municipio, clave_elector=:clave_elector,
+                    observaciones=:observaciones
                 WHERE id = :id
             """, {**datos, "id": persona_id})
             db.commit()

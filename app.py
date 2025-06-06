@@ -160,7 +160,8 @@ def nueva_persona():
             "fecha_nac": request.form["fecha_nac"],
             "id_estado": id_estado,
             "id_municipio": id_municipio,
-            "clave_elector": clave_elector
+            "clave_elector": clave_elector,
+            "observaciones": request.form.get("observaciones", "")
         }
         if not datos["nombre"] or not datos["apellido_paterno"] or not datos["apellido_materno"] or not datos["curp"]:
             flash("Nombre, apellidos y CURP no pueden quedar en blanco.", "warning")
@@ -201,7 +202,8 @@ def editar_persona(id):
             "fecha_nac": request.form["fecha_nac"],
             "id_estado": request.form["id_estado"],
             "id_municipio": request.form["id_municipio"],
-            "clave_elector": request.form["clave_elector"].strip().upper()
+            "clave_elector": request.form["clave_elector"].strip().upper(),
+            "observaciones": request.form.get("observaciones", "")
         }
         if not datos["nombre"] or not datos["apellido_paterno"] or not datos["apellido_materno"] or not datos["curp"]:
             flash("Nombre, apellidos y CURP no pueden quedar en blanco.", "warning")
