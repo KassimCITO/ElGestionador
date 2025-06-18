@@ -5,3 +5,5 @@ Werkzeug
 WTForms
 Pillow
 python-dotenv
+Jinja2>=3.1.0
+MarkupSafe>=2.1.0

@@ -3,8 +3,36 @@
 {% block title %}Listado de Personas{% endblock %}
 
 {% block content %}
+<style>
+  .btn-acciones {
+    font-size: 1.05rem;
+    padding: 0.5rem 1.1rem;
+    margin-right: 0.2rem;
+    box-shadow: 0 2px 8px rgba(13,110,253,0.08);
+    transition: transform 0.1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+  }
+  .btn-acciones:active {
+    transform: scale(0.97);
+  }
+  @media (max-width: 768px) {
+    .table-responsive {
+      font-size: 0.95rem;
+    }
+    .btn-acciones {
+      font-size: 0.95rem;
+      padding: 0.4rem 0.7rem;
+    }
+    .table th, .table td {
+      white-space: nowrap;
+    }
+  }
+</style>
 <h3 class="mb-4">Personas Registradas</h3>
-<a href="{{ url_for('nueva_persona') }}" class="btn btn-success mb-3">+ Nueva Persona</a>
+<a href="{{ url_for('nueva_persona') }}" class="btn btn-success mb-3"><span class="bi bi-person-plus"></span> Nueva Persona</a>
+<div class="table-responsive">
 <table class="table table-striped table-hover align-middle">
     <thead class="table-dark">
         <tr>
@@ -39,11 +67,15 @@
             <td>{{ persona.fecha_nac }}</td>
             <td>{{ persona.cp }}</td>
             <td>
-                <a href="{{ url_for('editar_persona', id=persona.id) }}" class="btn btn-sm btn-warning">Editar</a>
-                <a href="{{ url_for('eliminar_persona', id=persona.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este registro?')">Eliminar</a>
+                <a href="{{ url_for('editar_persona', id=persona.id) }}" class="btn btn-warning btn-acciones" title="Editar"><span class="bi bi-pencil-square"></span> Editar</a>
+                <a href="{{ url_for('eliminar_persona', id=persona.id) }}" class="btn btn-danger btn-acciones" onclick="return confirm('¿Eliminar este registro?')" title="Eliminar"><span class="bi bi-trash"></span> Eliminar</a>
+                <a href="{{ url_for('reporte_persona', id=persona.id) }}" class="btn btn-info btn-acciones" target="_blank" title="Imprimir"><span class="bi bi-printer"></span> Imprimir</a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+</div>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 {% endblock %}

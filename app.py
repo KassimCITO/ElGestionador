@@ -58,6 +58,7 @@ for i, estado in enumerate(ESTADOS_MX):
 
 dbman = DBManager()
 dbman.create_tables()
+dbman.migrate_add_fields()
 
 app.permanent_session_lifetime = timedelta(minutes=30)
 
@@ -201,7 +202,9 @@ def editar_persona(id):
             "fecha_nac": request.form["fecha_nac"],
             "id_estado": request.form["id_estado"],
             "id_municipio": request.form["id_municipio"],
-            "clave_elector": request.form["clave_elector"].strip().upper()
+            "clave_elector": request.form["clave_elector"].strip().upper(),
+            "notas": request.form.get("notas", ""),
+            "modificado_por": session.get("usuario")
         }
         if not datos["nombre"] or not datos["apellido_paterno"] or not datos["apellido_materno"] or not datos["curp"]:
             flash("Nombre, apellidos y CURP no pueden quedar en blanco.", "warning")
@@ -296,12 +299,23 @@ def configuracion_reporte():
         return redirect(url_for("dashboard"))
     config = cargar_config_reporte()
     if request.method == "POST":
-        config["encabezado"] = request.form["encabezado"]
-        config["pie"] = request.form["pie"]
-        config["estilos"] = request.form["estilos"]
-        guardar_config_reporte(config)
-        flash("Plantilla de reporte actualizada.", "success")
-        return redirect(url_for("configuracion_reporte"))
+        if "encabezado" in request.form and "pie" in request.form and "estilos" in request.form:
+            config["encabezado"] = request.form["encabezado"]
+            config["pie"] = request.form["pie"]
+            config["estilos"] = request.form["estilos"]
+            guardar_config_reporte(config)
+            flash("Plantilla de reporte actualizada.", "success")
+            return redirect(url_for("configuracion_reporte"))
+        # Restaurar valores por defecto si se solicita
+        if request.form.get("restaurar") == "1":
+            config = {
+                "encabezado": "<h2 class='mb-4 text-center'>Reporte General de Personas</h2>",
+                "pie": "<div class='text-center mt-4'><small>Generado por ElGestionador</small></div>",
+                "estilos": ""
+            }
+            guardar_config_reporte(config)
+            flash("Valores por defecto restaurados.", "info")
+            return redirect(url_for("configuracion_reporte"))
     return render_template("configuracion_reporte.html", config=config)
 
 @app.route("/reportes")
@@ -323,6 +337,32 @@ def reportes():
         personas_list.append(persona_dict)
     config = cargar_config_reporte()
     return render_template("reportes.html", personas=personas_list, config_reporte=config)
+
+@app.route("/personas/eliminar/<int:id>", methods=["POST", "GET"])
+def eliminar_persona(id):
+    if not verificar_permiso("edicion"):
+        return redirect(url_for("dashboard"))
+    dbman.delete_persona(id)
+    flash("Persona eliminada correctamente.", "success")
+    return redirect(url_for("personas"))
+
+@app.route("/personas/reporte/<int:id>")
+def reporte_persona(id):
+    if not verificar_permiso("lectura"):
+        return redirect(url_for("dashboard"))
+    persona = dbman.get_persona(id)
+    if not persona:
+        flash("Persona no encontrada.", "warning")
+        return redirect(url_for("personas"))
+    estados_dict = {e["id"]: e["nombre"] for e in ESTADOS_MX}
+    municipios_dict = {}
+    for eid, municipios in MUNICIPIOS_MX.items():
+        municipios_dict[int(eid)] = {m["id"]: m["nombre"] for m in municipios}
+    persona_dict = dict(persona)
+    persona_dict["estado"] = estados_dict.get(persona["id_estado"], "-")
+    persona_dict["municipio"] = municipios_dict.get(persona["id_estado"], {}).get(persona["id_municipio"], "-")
+    config = cargar_config_reporte()
+    return render_template("reporte_persona.html", persona=persona_dict, config_reporte=config)
 
 if __name__ == "__main__":
     app.run(debug=True)

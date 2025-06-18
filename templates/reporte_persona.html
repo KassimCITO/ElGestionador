@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Reporte de Persona{% endblock %}
+
+{% block content %}
+<div class="d-print-none mb-3">
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir</button>
+    <a href="{{ url_for('personas') }}" class="btn btn-secondary">← Volver</a>
+</div>
+
+<div id="reporte-encabezado">{{ config_reporte.encabezado|safe }}</div>
+
+<style type="text/css">
+@media print {
+    .d-print-none { display: none !important; }
+}
+</style>
+{% if config_reporte.estilos %}
+<!-- Estilos personalizados de usuario para el reporte -->
+{{ config_reporte.estilos|safe }}
+{% endif %}
+
+<h4 class="mt-4">Datos Generales</h4>
+<table class="table table-bordered table-sm align-middle table-striped w-50 mx-auto">
+    <tr>
+        <th>Foto</th>
+        <td>{% if persona.foto %}<img src="{{ url_for('static', filename='uploads/' + persona.foto) }}" width="120" class="rounded">{% else %}<span class="text-muted">Sin foto</span>{% endif %}</td>
+    </tr>
+    <tr><th>Nombre Completo</th><td>{{ persona.nombre }} {{ persona.apellido_paterno }} {{ persona.apellido_materno }}</td></tr>
+    <tr><th>CURP</th><td>{{ persona.curp }}</td></tr>
+    <tr><th>Dirección</th><td>{{ persona.direccion }}</td></tr>
+    <tr><th>Colonia</th><td>{{ persona.colonia }}</td></tr>
+    <tr><th>Fecha de Nacimiento</th><td>{{ persona.fecha_nac }}</td></tr>
+    <tr><th>Código Postal</th><td>{{ persona.cp }}</td></tr>
+    <tr><th>Municipio</th><td>{{ persona.municipio }}</td></tr>
+    <tr><th>Estado</th><td>{{ persona.estado }}</td></tr>
+    <tr><th>Clave Elector</th><td>{{ persona.clave_elector }}</td></tr>
+</table>
+<h4 class="mt-4">Notas</h4>
+<div class="border p-3 mb-3 bg-light">{{ persona.notas or '' }}</div>
+
+<div id="reporte-pie">{{ config_reporte.pie|safe }}</div>
+{% endblock %}

@@ -4,20 +4,63 @@
 
 {% block content %}
 <h2 class="mb-4">Personalizar Plantilla de Reporte</h2>
-<form method="post">
+<div class="alert alert-info">
+    <b>Tips rápidos:</b>
+    <ul>
+        <li>Puedes usar HTML en encabezado y pie, por ejemplo: <code>&lt;h2&gt;Mi Reporte&lt;/h2&gt;</code></li>
+        <li>Para agregar el logo: <code>&lt;img src='/static/logo.svg' height='40'&gt;</code></li>
+        <li>Variables útiles: <code>{{ "now"|date("%d/%m/%Y") }}</code> (fecha actual), <code>{{ session['usuario'] }}</code> (usuario actual)</li>
+        <li>Ejemplo de firma: <code>&lt;div class='firma'&gt;Firma del responsable&lt;/div&gt;</code></li>
+        <li>Ejemplo de CSS zebra: <code>.table-striped tbody tr:nth-child(odd) { background: #f9f9f9; }</code></li>
+    </ul>
+</div>
+<form method="post" id="form-reporte">
     <div class="mb-3">
         <label for="encabezado" class="form-label">Encabezado del Reporte (HTML permitido)</label>
-        <textarea class="form-control" id="encabezado" name="encabezado" rows="3">{{ config.encabezado|safe }}</textarea>
+        <textarea class="form-control" id="encabezado" name="encabezado" rows="3" oninput="actualizarVistaPrevia()">{{ config.encabezado|safe }}</textarea>
     </div>
     <div class="mb-3">
         <label for="pie" class="form-label">Pie de Página (HTML permitido)</label>
-        <textarea class="form-control" id="pie" name="pie" rows="2">{{ config.pie|safe }}</textarea>
+        <textarea class="form-control" id="pie" name="pie" rows="2" oninput="actualizarVistaPrevia()">{{ config.pie|safe }}</textarea>
     </div>
     <div class="mb-3">
         <label for="estilos" class="form-label">Estilos CSS personalizados</label>
-        <textarea class="form-control" id="estilos" name="estilos" rows="2">{{ config.estilos|safe }}</textarea>
+        <textarea class="form-control" id="estilos" name="estilos" rows="2" oninput="actualizarVistaPrevia()">{{ config.estilos|safe }}</textarea>
     </div>
     <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <button type="button" class="btn btn-outline-danger" onclick="restaurarPorDefecto()">Restaurar valores por defecto</button>
     <a href="{{ url_for('reportes') }}" class="btn btn-secondary">Cancelar</a>
 </form>
+<hr>
+<h5>Vista previa en vivo:</h5>
+<div id="preview-container" class="border p-3 mb-3" style="background:#f8f9fa">
+    <div id="preview-encabezado">{{ config.encabezado|safe }}</div>
+    <table class="table table-bordered table-sm align-middle table-striped w-50 mx-auto">
+        <tr><th>Nombre Completo</th><td>Juan Pérez López</td></tr>
+        <tr><th>CURP</th><td>PEPJ800101HDFRRN09</td></tr>
+        <tr><th>Dirección</th><td>Calle Falsa 123</td></tr>
+        <tr><th>Colonia</th><td>Centro</td></tr>
+        <tr><th>Fecha de Nacimiento</th><td>01/01/1980</td></tr>
+        <tr><th>Código Postal</th><td>06000</td></tr>
+        <tr><th>Municipio</th><td>Ciudad de México</td></tr>
+        <tr><th>Estado</th><td>CDMX</td></tr>
+        <tr><th>Clave Elector</th><td>ABC1234567</td></tr>
+        <tr><th>Foto</th><td><img src="/static/logo.svg" width="60" class="rounded"></td></tr>
+    </table>
+    <div id="preview-pie">{{ config.pie|safe }}</div>
+</div>
+<style id="preview-estilos">{{ config.estilos|safe }}</style>
+<script>
+function actualizarVistaPrevia() {
+    document.getElementById('preview-encabezado').innerHTML = document.getElementById('encabezado').value;
+    document.getElementById('preview-pie').innerHTML = document.getElementById('pie').value;
+    document.getElementById('preview-estilos').innerHTML = document.getElementById('estilos').value;
+}
+function restaurarPorDefecto() {
+    document.getElementById('encabezado').value = `<h2 class='mb-4 text-center'>Reporte General de Personas</h2>`;
+    document.getElementById('pie').value = `<div class='text-center mt-4'><small>Generado por ElGestionador</small></div>`;
+    document.getElementById('estilos').value = '';
+    actualizarVistaPrevia();
+}
+</script>
 {% endblock %}

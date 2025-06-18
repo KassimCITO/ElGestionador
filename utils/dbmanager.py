@@ -111,7 +111,8 @@ class DBManager:
                 SET nombre=:nombre, apellido_paterno=:apellido_paterno,
                     apellido_materno=:apellido_materno, curp=:curp,
                     direccion=:direccion, colonia=:colonia, cp=:cp, fecha_nac=:fecha_nac,
-                    id_estado=:id_estado, id_municipio=:id_municipio, clave_elector=:clave_elector
+                    id_estado=:id_estado, id_municipio=:id_municipio, clave_elector=:clave_elector,
+                    notas=:notas, modificado_por=:modificado_por
                 WHERE id = :id
             """, {**datos, "id": persona_id})
             db.commit()
@@ -119,4 +120,27 @@ class DBManager:
     def update_persona_foto(self, persona_id, nombre_archivo):
         with self.get_db() as db:
             db.execute("UPDATE personas SET foto = ? WHERE id = ?", (nombre_archivo, persona_id))
+            db.commit()
+
+    def delete_persona(self, persona_id):
+        with self.get_db() as db:
+            db.execute("DELETE FROM personas WHERE id = ?", (persona_id,))
+            db.commit()
+
+    def migrate_add_fields(self):
+        with self.get_db() as db:
+            # Agregar campo ID_Usuario a usuarios si no existe
+            try:
+                db.execute("ALTER TABLE usuarios ADD COLUMN ID_Usuario INTEGER")
+            except Exception:
+                pass
+            # Agregar campos notas y modificado_por a personas si no existen
+            try:
+                db.execute("ALTER TABLE personas ADD COLUMN notas TEXT")
+            except Exception:
+                pass
+            try:
+                db.execute("ALTER TABLE personas ADD COLUMN modificado_por INTEGER")
+            except Exception:
+                pass
             db.commit()
